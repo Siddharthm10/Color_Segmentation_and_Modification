@@ -9,7 +9,7 @@
 - os
 
 ### Steps:
-##### 1. First step was to detect the RGB colors assosciated with each position in the image.
+##### 1. First step was to detect the RGB colors associated with each position in the image.
  - It was easy as the images read by opencv contained numpy arrays (3-D) containing the RGB values.
  - We used a callback function which returned the x,y position of the click and then extracted the respective RGB values which we displayed using cv2.text. (You can find the code for this in Main.py)
  
@@ -19,9 +19,9 @@
  
 ##### 3. Selecting the portion with one color 
  - Initial idea was to get all the traverse through the entire image(PIL used) and setting some threshold for each RGB values and then changing the color.
-  - Problems faced here were : Thresholds had to be set mannually for each product & for each color, Also there were some added complication with using OpenCV & PIL together.
+  - Problems faced here were : Thresholds had to be set manually for each product & for each color, Also there were some added complication with using OpenCV & PIL together.
  - Then we tried HSV color ranges to make masks for each color.
-  - But again due to high variation this wasnt efficient unless provided with the mannual ranges.
+  - But again due to high variation this wasn't efficient unless provided with the manual ranges.
  - Now we are trying deep learning networks for color segmentation.
  
  
