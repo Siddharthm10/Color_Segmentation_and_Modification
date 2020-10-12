@@ -3,13 +3,11 @@ def customize_function(event, x, y, flags, params):
     global b,g,r
     global label,l
     global refPt
+    
     if event == cv2.EVENT_RBUTTONDOWN:
-        #saving the x, y positions #######temp (to be kept if necessary)
-        xpos = x
-        ypos = y
         # b,g,r = img[y,x]
         #identifying the label on which the user clicks
-        l=label[y,x]
+        l=int(label[y,x])
 
     # if the left mouse button was clicked, record the starting
     # (x, y) coordinates and indicate that cropping is being
@@ -26,27 +24,30 @@ def customize_function(event, x, y, flags, params):
 
         # draw a rectangle around the region of interest
         cv2.rectangle(img, refPt[0], refPt[1], (0, 255, 0), 2)
-        cv2.imshow("image", img)
+        cv2.imshow('demo', img)
 
-        
+
+
 
 def change_color( s_img, img, color_to_apply):
 
-
-
+    
     #making mask from the provided label
-    mask = cv2.inRange(label,2,2)
+    mask = cv2.inRange(label,l,l)
+    gray_img = cv2.cvtColor(s_img, cv2.COLOR_RGB2GRAY)
+    b,g,r = cv2.split(gray_img)*3
+    R = np.multiply(1,r)
+    G = np.multiply(0,g)
+    B = np.multiply(0,b)
+    New_image = cv2.merge((B,G,R))
+    if(refPt==[]):
+        s_img[mask>0]= New_image[mask>0]
+    else:
+        s_img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0] = New_image[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0]
+                
 
-    #coloring roi with the color to be applied in the mask regions
-    s_img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0] = color_to_apply
-
-    # if there are two reference points, then crop the region of interest
-    # from teh image and display it
-    # if len(refPt) == 2:
-        # s_img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]] = img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
-    # else:
-        # s_img = img
-    cv2.imshow("Result",s_img)
+    cv2.imwrite("Result.jpg", s_img)    
+    cv2.imshow("Output",s_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -68,7 +69,7 @@ def image_preprocessing(img, no_of_colors):
     # Now convert back into uint8, and make original image
     reduced = np.uint8(center)[label]
     
-    return reduced, label
+    return reduced, label, center
 
 
 #######################################################################################################
@@ -98,12 +99,13 @@ if __name__ == "__main__":
     l=0
     refPt = []
 
+
     #other variables
-    no_of_colors = 3
-    color_to_apply = (0,0,0)
+    no_of_colors = 5
+    color_to_apply = (0,0,255)
 
     #Pre-process image 
-    _,label = image_preprocessing(img, no_of_colors) # Kmeans colored image
+    _,label,center = image_preprocessing(img, no_of_colors) # Kmeans colored image
 
 
     #creating a named window for the image we want to show : demo
@@ -121,6 +123,7 @@ if __name__ == "__main__":
             change_color(s_img, img, color_to_apply)
         elif key == ord('q'):
             break
+
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
