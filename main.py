@@ -17,7 +17,7 @@ def customize_function(event, x, y, flags, params):
 
     # check to see if the left mouse button was released
     elif event == cv2.EVENT_LBUTTONUP:
-
+        
         # record the ending (x, y) coordinates and indicate that
         # the cropping operation is finished
         refPt.append((x, y))
