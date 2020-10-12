@@ -31,7 +31,7 @@ def customize_function(event, x, y, flags, params):
 
 def change_color( s_img, img, color_to_apply):
 
-    
+
     #making mask from the provided label
     mask = cv2.inRange(label,l,l)
     gray_img = cv2.cvtColor(s_img, cv2.COLOR_RGB2GRAY)
@@ -40,7 +40,7 @@ def change_color( s_img, img, color_to_apply):
     G = np.multiply(0,g)
     B = np.multiply(0,b)
     New_image = cv2.merge((B,G,R))
-    if(refPt==[]):
+    if(len(refPt)<2):
         s_img[mask>0]= New_image[mask>0]
     else:
         s_img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0] = New_image[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0]
