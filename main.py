@@ -31,11 +31,11 @@ def customize_function(event, x, y, flags, params):
 
 def change_color( s_img, img, color_to_apply):
 
-
     #making mask from the provided label
     mask = cv2.inRange(label,l,l)
     gray_img = cv2.cvtColor(s_img, cv2.COLOR_RGB2GRAY)
-    b,g,r = cv2.split(gray_img)*3
+    temp = np.multiply(grayscale_Threshold, cv2.split(gray_img))
+    b,g,r = temp[0],temp[0],temp[0]
     R = np.multiply(1,r)
     G = np.multiply(0,g)
     B = np.multiply(0,b)
@@ -103,6 +103,7 @@ if __name__ == "__main__":
     #other variables
     no_of_colors = 5
     color_to_apply = (0,0,255)
+    grayscale_Threshold = 2 #should be greater than 1 for image to be light otherwise for a darker variant it should be less than 1 $$
 
     #Pre-process image 
     _,label,center = image_preprocessing(img, no_of_colors) # Kmeans colored image
