@@ -29,29 +29,37 @@ def customize_function(event, x, y, flags, params):
 
 
 
-def change_color( s_img, img, color_to_apply):
+def change_color(img, color_to_apply):
 
     #making mask from the provided label
     mask = cv2.inRange(label,l,l)
-    gray_img = cv2.cvtColor(s_img, cv2.COLOR_RGB2GRAY)
+    #making a grayscale image to save the textures
+    gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    #saving the grayscale image with threshold, to lower the dark areas
     temp = np.multiply(grayscale_Threshold, cv2.split(gray_img))
+    #saving the bgr with same values(values of the grayscale image)
     b,g,r = temp[0],temp[0],temp[0]
+    #initiating the numpy arrays and multiplying with the rgb colors in order to apply a new color 1,0,0 represents normalized color red
     R = np.multiply(1,r)
     G = np.multiply(0,g)
     B = np.multiply(0,b)
+    #merging these color into a new image
     New_image = cv2.merge((B,G,R))
+    #multifunctionality(1: apply color to complete image ;  2: applying color to the ROI selected)
     if(len(refPt)<2):
-        s_img[mask>0]= New_image[mask>0]
+        img[mask>0]= New_image[mask>0]
     else:
-        s_img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0] = New_image[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0]
-                
+        img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0] = New_image[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0]
 
-    cv2.imwrite("Result.jpg", s_img)    
-    cv2.imshow("Output",s_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
-    # return s_img
+    
+    #Saving the modified image
+    cv2.imwrite("Result.jpg", img)
+    #Showing the modified image  
+    # cv2.imshow('demo',img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    return img
 
 
 
@@ -79,7 +87,8 @@ if __name__ == "__main__":
     import cv2
     import numpy as np
     import argparse
-    import imutils
+    # import imutils
+    import time
 
     #creating argument parser to take image from command line
     ap = argparse.ArgumentParser()
@@ -94,8 +103,6 @@ if __name__ == "__main__":
     # reduced = img.copy() #copy for reduced colors using kmeans
 
     #initializing Global variables
-    xpos=ypos=0
-    r=g=b=0
     l=0
     refPt = []
 
@@ -107,22 +114,27 @@ if __name__ == "__main__":
 
     #Pre-process image 
     _,label,center = image_preprocessing(img, no_of_colors) # Kmeans colored image
-
-
+    
     #creating a named window for the image we want to show : demo
     cv2.namedWindow('demo')
+    #callback on demo
     cv2.setMouseCallback('demo', customize_function)
     while(1):
+        #show image on which changes will be made
         cv2.imshow('demo', img)
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord('r'):
+            #reset if r is pressed
             img = clone.copy()
             xpos=r=g=b=ypos=l=0
             refPt = []
         if key == ord('c'):
-            change_color(s_img, img, color_to_apply)
+            #show output if c is pressed
+            img = change_color(img, color_to_apply)
+            
         elif key == ord('q'):
+            #quit if q is pressed
             break
 
     cv2.waitKey(0)
