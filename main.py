@@ -34,7 +34,13 @@ def change_color(img, color_to_apply):
     #making a grayscale image to save the textures
     gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     #saving the grayscale image with threshold, to lower the dark areas
-    temp = np.multiply(grayscale_Threshold, cv2.split(gray_img))
+    # temp = np.multiply(grayscale_Threshold, cv2.split(gray_img))
+    # # HERE WE WERE GETTING BLACK SPOTS ON INCREASING THE THRESHOLD
+
+    gray_img[mask>0] += 125
+    temp = np.array(cv2.split(gray_img),dtype=np.uint8)
+
+
     #saving the bgr with same values(values of the grayscale image)
     b,g,r = temp[0],temp[0],temp[0]
     #initiating the numpy arrays and multiplying with the rgb colors 
@@ -43,6 +49,8 @@ def change_color(img, color_to_apply):
     G = np.multiply(color_to_apply[1],g)
     B = np.multiply(color_to_apply[2],b)
     #merging these color into a new image
+    print(color_to_apply[0],color_to_apply[1],color_to_apply[2])
+    # time.sleep(20)
     New_image = cv2.merge((B,G,R))
     #multi-functionality(1: apply color to complete image;
     #2: applying color to the ROI selected)
@@ -90,7 +98,7 @@ if __name__ == "__main__":
         data = json.load(file)
         no_of_colors = data['no_of_colors'][0]
         #RGB Normalized value
-        # color_to_apply = data['color_to_apply'][0]
+        color_to_apply = data['color_to_apply'][0]
         #should be greater than 1 for image to be light otherwise for a darker variant it should be less than 1 $$
         grayscale_Threshold = data['Grayscale_threshold'][0] 
     #Pre-process image 
@@ -100,30 +108,28 @@ if __name__ == "__main__":
     cv2.namedWindow('demo')
     #callback on demo
     cv2.setMouseCallback('demo', customize_function)
-    while(Updated):
-        color_to_apply = input_color()
-        while(1):
+    
+    while(1):
+        #show image on which changes will be made
+        cv2.imshow('demo', img)
+        cv2.imshow('original', clone)
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('r'):
+            #reset if r is pressed
+            img = clone.copy()
+            l=0
+            refPt = []
+        if key == ord('c'):
+            #show output if c is pressed
+            color_to_apply = input_color()
             color = np.zeros((300,300,3), np.uint8)
             # cv2.cvtColor(color, cv2.COLOR_BGR2RGB)
             color[:] = (color_to_apply[2]*255, color_to_apply[1]*255, color_to_apply[0]*255)
             cv2.imshow("color", color)
-            #show image on which changes will be made
-            cv2.imshow('demo', img)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('r'):
-                #reset if r is pressed
-                img = clone.copy()
-                l=0
-                refPt = []
-            if key == ord('c'):
-                #show output if c is pressed
-                img = change_color(img, color_to_apply)
-            if key == ord('m'):
-                break;
-            elif key == ord('q'):
-                #quit if q is pressed
-                Updated = False
-                break
+            img = change_color(img, color_to_apply)
+        elif key == ord('q'):
+            #quit if q is pressed
+            break
 
     cv2.destroyAllWindows()
 
