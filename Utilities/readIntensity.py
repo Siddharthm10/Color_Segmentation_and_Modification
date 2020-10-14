@@ -8,7 +8,7 @@ upper = np.array([159,255,255])
 imgHSV = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 mask = cv2.inRange(image,lower,upper)
 gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-temp = (np.multiply(2,cv2.split(gray_image)))
+temp = (np.multiply(2.4,cv2.split(gray_image)))
 
 b,g,r = temp[0],temp[0],temp[0]
 R = np.multiply(1,r)
