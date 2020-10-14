@@ -1,11 +1,9 @@
 def customize_function(event, x, y, flags, params):
-    global xpos,ypos
-    global b,g,r
-    global label,l
+    global l,label
     global refPt
+    global Updated
     
     if event == cv2.EVENT_RBUTTONDOWN:
-        # b,g,r = img[y,x]
         #identifying the label on which the user clicks
         l=int(label[y,x])
 
@@ -23,8 +21,8 @@ def customize_function(event, x, y, flags, params):
         refPt.append((x, y))
 
         # draw a rectangle around the region of interest
-        cv2.rectangle(img, refPt[0], refPt[1], (0, 255, 0), 2)
-        cv2.imshow('demo', img)
+        cv2.rectangle(s_img, refPt[0], refPt[1], (0, 255, 0), 2)
+        cv2.imshow('demo', s_img)
 
 
 
@@ -39,56 +37,36 @@ def change_color(img, color_to_apply):
     temp = np.multiply(grayscale_Threshold, cv2.split(gray_img))
     #saving the bgr with same values(values of the grayscale image)
     b,g,r = temp[0],temp[0],temp[0]
-    #initiating the numpy arrays and multiplying with the rgb colors in order to apply a new color 1,0,0 represents normalized color red
-    R = np.multiply(1,r)
-    G = np.multiply(0,g)
-    B = np.multiply(0,b)
+    #initiating the numpy arrays and multiplying with the rgb colors 
+    #in order to apply a new color 1,0,0 represents normalized color red
+    R = np.multiply(color_to_apply[0],r)
+    G = np.multiply(color_to_apply[1],g)
+    B = np.multiply(color_to_apply[2],b)
     #merging these color into a new image
     New_image = cv2.merge((B,G,R))
-    #multifunctionality(1: apply color to complete image ;  2: applying color to the ROI selected)
+    #multi-functionality(1: apply color to complete image;
+    #2: applying color to the ROI selected)
     if(len(refPt)<2):
         img[mask>0]= New_image[mask>0]
     else:
         img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0] = New_image[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]][mask[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]>0]
 
-
-    
     #Saving the modified image
-    cv2.imwrite("Result.jpg", img)
-    #Showing the modified image  
-    # cv2.imshow('demo',img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    # cv2.imwrite("Result.jpg", img)
     return img
 
 
-
-def image_preprocessing(img, no_of_colors):
-    # img = cv2.resize(img, (600,400), interpolation = cv2.INTER_AREA)
-    Z = img.reshape((-1,3))
-    # convert to np.float32
-    Z = np.float32(Z)
-    # define criteria, number of clusters(K) and apply kmeans()
-    # 10 - no of iterations, 1.0 - required accuracy
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-
-    _,label,center = cv2.kmeans(Z, no_of_colors, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-    label = label.reshape((img.shape[:-1]))
-    # Now convert back into uint8, and make original image
-    reduced = np.uint8(center)[label]
-    
-    return reduced, label, center
-
-
-#######################################################################################################
+###############################################################################################
 if __name__ == "__main__":
 
     #importing important Libraries
     import cv2
     import numpy as np
     import argparse
-    # import imutils
+    import json
     import time
+    from Utilities.Popup import input_color
+    from Utilities.preprocessing import image_preprocessing
 
     #creating argument parser to take image from command line
     ap = argparse.ArgumentParser()
@@ -105,39 +83,45 @@ if __name__ == "__main__":
     #initializing Global variables
     l=0
     refPt = []
-
+    Updated = True
 
     #other variables
-    no_of_colors = 5
-    color_to_apply = (0,0,255)
-    grayscale_Threshold = 2 #should be greater than 1 for image to be light otherwise for a darker variant it should be less than 1 $$
-
+    with open('cfg/config.txt','r') as file:
+        data = json.load(file)
+        no_of_colors = data['no_of_colors'][0]
+        #RGB Normalized value
+        # color_to_apply = data['color_to_apply'][0]
+        #should be greater than 1 for image to be light otherwise for a darker variant it should be less than 1 $$
+        grayscale_Threshold = data['Grayscale_threshold'][0] 
     #Pre-process image 
-    _,label,center = image_preprocessing(img, no_of_colors) # Kmeans colored image
+    label,center = image_preprocessing(img, no_of_colors) # Kmeans colored image
     
     #creating a named window for the image we want to show : demo
     cv2.namedWindow('demo')
     #callback on demo
     cv2.setMouseCallback('demo', customize_function)
-    while(1):
-        #show image on which changes will be made
-        cv2.imshow('demo', img)
-
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('r'):
-            #reset if r is pressed
-            img = clone.copy()
-            xpos=r=g=b=ypos=l=0
-            refPt = []
-        if key == ord('c'):
-            #show output if c is pressed
-            img = change_color(img, color_to_apply)
+    while(Updated):
+        color_to_apply = input_color()
+        while(1):
+            #show image on which changes will be made
+            cv2.imshow('demo', img)
             
-        elif key == ord('q'):
-            #quit if q is pressed
-            break
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('r'):
+                #reset if r is pressed
+                img = clone.copy()
+                l=0
+                refPt = []
+            if key == ord('c'):
+                #show output if c is pressed
+                img = change_color(img, color_to_apply)
+            if key == ord('m'):
+                break;
+            elif key == ord('q'):
+                #quit if q is pressed
+                Updated = False
+                break
 
-    cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 #######################################################################################################

@@ -1,0 +1,1 @@
+{"no_of_colors": [5], "Grayscale_threshold": [2.5]}

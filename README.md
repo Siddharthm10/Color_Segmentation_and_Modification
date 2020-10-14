@@ -1,31 +1,56 @@
+# Custom Color Product
+### Aim:
+- The aim of this project is to provide an easy interface to the user for customizability of the product.
 
-# Color_Segmentation_and_Modification:
- ##### The purpose behind the project is to select the colors from an image and modify them with a custom color(user's Choice) within the ROI selected. There can be many applications for this project like fashion customizability, Trying different paints and color combinations for house decor & furniture etc.
- 
-### Libraries Used:
-- PIL
-- OpenCV
+### Execution Steps:
+1. Right-Click on the color you want to change.
+2. Press 'c' to apply the color changes.
+3. Press 'r' to reset the image.
+4. Press 'q' to quit the application.
+
+### Pre-requisite libraries for code implementation
 - Numpy
-- os
+- OpenCV
+- ArgParse
 
-### Steps:
-##### 1. First step was to detect the RGB colors associated with each position in the image.
- - It was easy as the images read by opencv contained numpy arrays (3-D) containing the RGB values.
- - We used a callback function which returned the x,y position of the click and then extracted the respective RGB values which we displayed using cv2.text. (You can find the code for this in Main.py)
- 
-##### 2. Second step was to select a ROI (Region Of Interest)
- - We used the mouse callback here as well to get the drag and dropped area by getting the x,y coordinates of both the end points
- - Then we trimmed the original image using the coordinates, worked with that image and placed it back on the original image.
- 
-##### 3. Selecting the portion with one color 
- - Initial idea was to get all the traverse through the entire image(PIL used) and setting some threshold for each RGB values and then changing the color.
-  - Problems faced here were : Thresholds had to be set manually for each product & for each color, Also there were some added complication with using OpenCV & PIL together.
- - Then we tried HSV color ranges to make masks for each color.
-  - But again due to high variation this wasn't efficient unless provided with the manual ranges.
- - Now we are trying deep learning networks for color segmentation.
- 
- 
- 
-PS : Things to be tried :- 
- - Fill method 
- - KNN New logic 
+### Input image format:
+The input image should be clicked or choosed accordingly for best results.
+- The backgroung should not have any constituent colors of the product(so that the color recognition does its job with better accuracy).
+
+### Specifications:
+- Processing Time: 3 seconds
+- Run Time: 0.042 seconds
+
+### Command line:
+```
+    $python source/main.py -i images/UsPolo.jpg
+```
+### Config 
+- Config file consists of :
+  - Number of colors
+  - Grayscale threshold(>1)
+  - Color to apply
+  
+### File Paths:
+- images: Example images.
+- cfg: Customizable config variables.
+- reference: Codes used for reference.
+- source: Code.  
+
+### Code Flow:
+#### Step 1) Classify the colors present in an image
+- To classify the colors present we used K-Nearest Neighbours.
+- In this the whole image is traversed and all the colors are seperated into different classes.
+- The user has to provide with the no of different centers to classify.(Basically the no. of colors has to be given as an input by the user)
+- It can be done via the cfg file.
+
+#### Step 2) Get input via mouse clicks 
+- Mouse Callback functions are used for this purpose in opencv.
+- Read the label and centers created by knn.
+- And the mask is made with the label on which the user clicks.
+
+#### Step 3) Color the Specified portion
+- This has to be done while keeping the textures of the image.
+- Firstly the image is converted to grayscale and the textures are read.
+- Then the color is applied to the masked portion.
+
