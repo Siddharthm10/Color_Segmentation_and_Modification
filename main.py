@@ -103,9 +103,12 @@ if __name__ == "__main__":
     while(Updated):
         color_to_apply = input_color()
         while(1):
+            color = np.zeros((300,300,3), np.uint8)
+            # cv2.cvtColor(color, cv2.COLOR_BGR2RGB)
+            color[:] = (color_to_apply[2]*255, color_to_apply[1]*255, color_to_apply[0]*255)
+            cv2.imshow("color", color)
             #show image on which changes will be made
             cv2.imshow('demo', img)
-            
             key = cv2.waitKey(1) & 0xFF
             if key == ord('r'):
                 #reset if r is pressed
