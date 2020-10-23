@@ -43,7 +43,7 @@ PS : Things to be tried :-
 
 Working in the Image Processing field gives you the power to make this possible. As we started working on it, we came across this concept of Color Segmentation. The idea was to customize/change the colors present in an image. As we began to research, we came across many amazing articles on color segmentation using Neural Networks & OpenCV (a python library written for the sole purpose of taking up Computer Vision challenges).  
 
-There were many cool projects like *Invisibility Cloak* (like the one from the Harry Potter), *object detection*, *Virtual Pen*(Used to draw over live webcam), and many others that used color detection/segmentation. Our goal was to do product customization where we can change any color present in a T-Shirt, Furniture, or any other product.
+BThere were many cool projects like *Invisibility Cloak* (like the one from the Harry Potter), *Object Detection*, *Virtual Pen*(Used to draw over live webcam), and many others that used color detection/segmentation. Our goal was to do product customization where we can change any color present in a T-Shirt, Furniture, or any other product.
 
 Using Neural Networks might have given us a better accuracy but there were other restraints like training/processing time, and lack of training data.
 So, we chose to proceed with OpenCV as it's accuracy can be optimised and is faster as compared to the Neural Networks.  
@@ -57,7 +57,7 @@ Our initial approach was to traverse through the image and set some thresholds t
 **Cons**: Thresholds had to be set manually for each color in each image. As we want the process to be as autonomous as possible, we rejected this idea.
 
 ### HSV Color picker: 
-HSV(Hue, Saturation & Value) is a cylindrical color model that remaps the RGB primary colors into dimensions that are easier for humans to understand. With the help of this color space(*link to the article on color spaces*), we can identify and mask portions containing a color.  
+HSV(Hue, Saturation & Value) is a cylindrical color model that remaps the RGB primary colors into dimensions that are easier for humans to understand. With the help of this [color space](https://programmingdesignsystems.com/color/color-models-and-color-spaces/index.html), we can identify and mask portions containing a color.  
 **Pros**: Good accuracy, Speed.  
 **Cons**: HSV values for masking required precision, which only comes with manual work. And hence, we dropped the idea.  
 
@@ -72,3 +72,8 @@ KNN (K Nearest Neighbors), as the name suggests it traverses through all the RGB
 - The processing time for each image is high (about 4 seconds for a 1200x1200 image).
 
 So, our final choice was KNN. KNN comes with the OpenCV module. [Here](https://www.geeksforgeeks.org/implementation-of-knn-using-opencv/), you can find some examples.
+
+
+## Applying a different color on that portion
+One might think that this part of the project is easy. Now, as the mask is ready, all we have to do is change the RGB value of the entire masked portion. It is indeed a good solution when we are dealing with images containing solid colors. But, as you can see in our case, we have high RGB variations.  
+Painting a new color (Changing RGB value directly) would result in loss of texture and light information. So, we'll have to come up with a new way to color the image keeping the textures.
