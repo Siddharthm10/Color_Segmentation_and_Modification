@@ -71,3 +71,4 @@ KNN (K Nearest Neighbors), as the name suggests it traverses through all the RGB
 **Cons**: 
 - The processing time for each image is high (about 4 seconds for a 1200x1200 image).
 
+So, our final choice was KNN. KNN comes with the OpenCV module. [Here](https://www.geeksforgeeks.org/implementation-of-knn-using-opencv/), you can find some examples.
