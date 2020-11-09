@@ -1,1 +1,1 @@
-{"image_01.jpg": 5, "image_02.jpeg": 3, "image_03.jpg": 5, "image_04.jpg": 7, "image_05.jpg": 2}
+{"image_01.jpg": 5, "image_02.jpeg": 3, "image_03.jpg": 3, "image_04.jpg": 5, "image_05.jpg": 2, "Image_06.jpg":3, "image_01.jpeg":3, "Joey.jpg":2}

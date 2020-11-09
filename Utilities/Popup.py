@@ -6,6 +6,7 @@ import numpy as np
 def input_color():
 
     application_window = tk.Tk()
+    application_window.withdraw()
 
     # the input dialog
     rgb_color, _ =  (colorchooser.askcolor(parent=application_window,

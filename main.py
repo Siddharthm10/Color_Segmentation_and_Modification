@@ -21,8 +21,8 @@ def customize_function(event, x, y, flags, params):
         refPt.append((x, y))
 
         # draw a rectangle around the region of interest
-        # cv2.rectangle(s_img, refPt[0], refPt[1], (0, 255, 0), 2)
-        # cv2.imshow('demo', s_img)
+        cv2.rectangle(img, refPt[0], refPt[1], (0, 255, 0), 2)
+        cv2.imshow('demo', img)
 
 
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     
     with open('labels/centers.json','r') as file:
         data = json.load(file)
-        #Pre-process image 
+        #Pre-process image
         center = np.array(data[filename]) 
     
     f=gzip.open(label_file_dir, mode='rb')
