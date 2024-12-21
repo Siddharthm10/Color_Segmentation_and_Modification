@@ -40,8 +40,8 @@ if __name__ == "__main__":
 
             # define criteria, number of clusters(K) and apply kmeans()
             # 10 - no of iterations, 1.0 - required accuracy
-            criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 8, 1.0)
-            _,label,center = cv2.kmeans(Z, no_of_colors, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+            criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+            _,label,center = cv2.kmeans(Z, no_of_colors, None, criteria, 10, cv2.KMEANS_PP_CENTERS)
             label = label.reshape((img.shape[:-1]))
             label = label.astype(np.uint8)
             center = center.astype(np.uint8)
